@@ -24,6 +24,8 @@ const PRODUCT_ALIAS: Record<string, string> = {
   airpods: 'airpods',
   carregador: 'charger',
   capa: 'case',
+  case: 'case',
+  charger: 'charger',
 };
 
 function resolveProductId(name: string): string | null {
@@ -120,19 +122,33 @@ export async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo) 
       const quantities: Record<string, number> = entities.quantities || {};
       const added: string[] = [];
 
+      // CORRIGIDO: Primeiro adiciona os produtos, DEPOIS busca o carrinho
       for (const name of productNames) {
         const productId = resolveProductId(name);
-        if (!productId) continue;
-        const qty = quantities[name] || 1;
-        await cartService.addToCart(jid, productId, qty);
-        added.push(PRODUCTS[productId].name);
+        if (!productId) {
+          console.log(`Product not resolved: ${name}`);
+          continue;
+        }
+
+        const qty = quantities[name] || quantities[productId] || 1;
+
+        console.log(`Adding to cart: ${productId} (${qty}x) for user ${jid}`);
+        const success = await cartService.addToCart(jid, productId, qty);
+
+        if (success && PRODUCTS[productId]) {
+          added.push(PRODUCTS[productId].name);
+        } else {
+          console.log(`Failed to add: ${productId}`);
+        }
       }
 
       if (added.length === 0) {
         return reply(sock, jid, 'Não encontrei esse produto. Use /produtos para ver o catálogo.');
       }
 
+      // Agora sim busca o carrinho atualizado
       const cartSummary = await cartText(jid);
+
       return reply(sock, jid,
         `✅ Adicionado ao carrinho: *${added.join(', ')}*\n\n${cartSummary}\n\nPara finalizar, diga "quero pagar" ou use /carrinho.`
       );
