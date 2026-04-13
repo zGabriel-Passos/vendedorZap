@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskget b69ravrds:*)",
+      "Bash(taskget bhk000qow:*)"
+    ]
+  }
+}
