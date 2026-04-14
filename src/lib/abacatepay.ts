@@ -76,13 +76,37 @@ export async function createPaymentForCart(
     };
   });
 
-  const billing = await createBilling({
+  // Log para debug
+  console.log('[AbacatePay] Creating payment with params:', {
     frequency: 'ONE_TIME',
     methods: ['PIX'],
     products,
     returnUrl: `${baseUrl}/`,
     completionUrl: `${baseUrl}/api/webhook/abacatepay?userId=${userId}`,
   });
+
+  // Tentando com customer mínimo para o modo de teste
+  const cleanUserId = userId.replace(/[^\d]/g, '').slice(-10); // Últimos 10 dígitos
+
+  const billing = await createBilling({
+    frequency: 'ONE_TIME',
+    methods: ['PIX'],
+    products,
+    returnUrl: `${baseUrl}/`,
+    completionUrl: `${baseUrl}/api/webhook/abacatepay?userId=${userId}`,
+    customer: {
+      // Valores mínimos para tentar passar na validação do modo de teste
+      name: `Teste ${cleanUserId}`,
+      email: `teste${cleanUserId}@teste.com`,
+      cellphone: cleanUserId.padStart(11, '0'), // Garantindo 11 dígitos para celular brasileiro
+      taxId: {
+        number: '12345678909', // CPF válido para teste
+        type: 'CPF'
+      }
+    }
+  });
+
+  console.log('[AbacatePay] Billing response:', billing);
 
   if (billing.error) throw new Error(billing.error);
 

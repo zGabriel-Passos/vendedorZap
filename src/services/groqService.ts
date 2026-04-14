@@ -23,6 +23,7 @@ interface IntentResult {
 
 export class GroqService {
   static async extractIntent(message: string): Promise<IntentResult> {
+    console.log(`[GroqService] Extracting intent from message: "${message}"`);
     try {
       const completion = await groq.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
@@ -58,10 +59,12 @@ IMPORTANTE: Use os IDs exatos dos produtos (iphone, macbook, airpods, charger, c
       });
 
       const raw = completion.choices[0]?.message?.content || '';
+      console.log(`[GroqService] Raw AI response: "${raw}"`);
       const jsonMatch = raw.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error('No JSON in response');
 
       const result = JSON.parse(jsonMatch[0]);
+      console.log(`[GroqService] Parsed result:`, result);
 
       // Normalizar os nomes dos produtos para os IDs corretos
       if (result.entities?.product_names) {
@@ -75,9 +78,11 @@ IMPORTANTE: Use os IDs exatos dos produtos (iphone, macbook, airpods, charger, c
         });
       }
 
+      console.log(`[GroqService] Final result after normalization:`, result);
       return result;
     } catch (err) {
       console.error('Groq extraction error:', err);
+      console.log('[GroqService] Falling back to local intent detection');
       return GroqService.fallback(message);
     }
   }

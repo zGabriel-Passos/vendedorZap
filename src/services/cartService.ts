@@ -19,7 +19,9 @@ const ORDERS = 'orders';
 
 export class FirebaseCartService {
   async getUserSession(userId: string): Promise<UserSession | null> {
+    console.log(`[CartService] Fetching session for userId: ${userId}`);
     const snap = await getDoc(doc(db, SESSIONS, userId));
+    console.log(`[CartService] Session fetch result - exists: ${snap.exists()}, data: ${snap.exists() ? JSON.stringify(snap.data()) : 'null'}`);
     return snap.exists() ? (snap.data() as UserSession) : null;
   }
 
@@ -30,23 +32,44 @@ export class FirebaseCartService {
   }
 
   async updateUserSession(userId: string, data: Partial<UserSession>): Promise<void> {
+    console.log(`[CartService] Updating session for userId: ${userId} with data:`, data);
     await updateDoc(doc(db, SESSIONS, userId), { ...data, lastInteraction: new Date() });
+    console.log(`[CartService] Session updated successfully for userId: ${userId}`);
   }
 
   async addToCart(userId: string, productId: string, quantity: number, variation?: string): Promise<boolean> {
     try {
-      if (!PRODUCTS[productId]) return false;
+      console.log(`[CartService] Adding to cart - userId: ${userId}, productId: ${productId}, quantity: ${quantity}, variation: ${variation || 'undefined'}`);
+      if (!PRODUCTS[productId]) {
+        console.log(`[CartService] Product not found: ${productId}`);
+        return false;
+      }
       const session = await this.getUserSession(userId);
+      console.log(`[CartService] Retrieved session:`, session);
       const cart: CartItem[] = session?.cart || [];
       const idx = cart.findIndex(i => i.productId === productId && i.variation === variation);
       if (idx >= 0) {
         cart[idx].quantity += quantity;
+        // Ensure variation is not undefined if it exists
+        if (variation !== undefined) {
+          cart[idx].variation = variation;
+        } else {
+          delete cart[idx].variation;
+        }
       } else {
-        cart.push({ productId, quantity, variation });
+        // Filtrar variações undefined para evitar erro no Firestore
+        const cartItem = { productId, quantity };
+        if (variation !== undefined) {
+          cartItem.variation = variation;
+        }
+        cart.push(cartItem);
       }
+      console.log(`[CartService] Updated cart:`, cart);
       await this.updateUserSession(userId, { cart });
+      console.log(`[CartService] Session updated successfully for userId: ${userId}`);
       return true;
-    } catch {
+    } catch (error) {
+      console.error('[CartService] Error in addToCart:', error);
       return false;
     }
   }

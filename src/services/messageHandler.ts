@@ -91,6 +91,7 @@ export async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo) 
 
   // --- AI intent extraction ---
   const { intent, entities } = await GroqService.extractIntent(body);
+  console.log(`[MessageHandler] AI extraction result - intent: ${intent}, entities:`, entities);
 
   switch (intent) {
     case 'greeting':
@@ -113,6 +114,45 @@ export async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo) 
     case 'shipping':
       return reply(sock, jid, freteText());
 
+    case 'product_inquiry':
+      // Se a pessoa inquiri sobre um produto e demonstrou interesse em comprar ("quero"), adiciona ao carrinho
+      const productNames = entities.product_names || [];
+      if (productNames.length > 0 && /\b(quero|comprar|adicionar|adiciona|coloca|queria|me vende|vende)\b/.test(body.toLowerCase())) {
+        // Redireciona para o fluxo de add_to_cart
+        const quantities = entities.quantities || {};
+        const added: string[] = [];
+
+        for (const name of productNames) {
+          const productId = resolveProductId(name);
+          if (!productId) continue;
+
+          const qty = quantities[name] || quantities[productId] || 1;
+          const success = await cartService.addToCart(jid, productId, qty);
+
+          if (success && PRODUCTS[productId]) {
+            added.push(PRODUCTS[productId].name);
+          }
+        }
+
+        if (added.length > 0) {
+          const cartSummary = await cartText(jid);
+          return reply(sock, jid,
+            `✅ Adicionado ao carrinho: *${added.join(', ')}*\n\n${cartSummary}\n\nPara finalizar, diga "quero pagar" ou use /carrinho.`
+          );
+        }
+      }
+
+      // Caso contrário, apenas informa disponibilidade
+      const productId = productNames[0];
+      if (productId && PRODUCTS[productId]) {
+        const product = PRODUCTS[productId];
+        return reply(sock, jid,
+          `📱 *${product.name}*\n\n${product.description}\n\n💰 *Preço: ${formatCurrency(product.price)}*\n\nDeseja adicionar este item ao carrinho?`
+        );
+      }
+
+      return reply(sock, jid, 'Produto não encontrado. Use /produtos para ver o catálogo disponível.');
+
     case 'reset':
       await cartService.clearCart(jid);
       return reply(sock, jid, '🔄 Conversa reiniciada! Como posso ajudá-lo hoje?');
@@ -122,33 +162,38 @@ export async function handleMessage(sock: WASocket, msg: proto.IWebMessageInfo) 
       const quantities: Record<string, number> = entities.quantities || {};
       const added: string[] = [];
 
+      console.log(`[MessageHandler] add_to_cart intent - productNames: ${productNames}, quantities:`, quantities);
+
       // CORRIGIDO: Primeiro adiciona os produtos, DEPOIS busca o carrinho
       for (const name of productNames) {
         const productId = resolveProductId(name);
         if (!productId) {
-          console.log(`Product not resolved: ${name}`);
+          console.log(`[MessageHandler] Product not resolved: ${name}`);
           continue;
         }
 
         const qty = quantities[name] || quantities[productId] || 1;
 
-        console.log(`Adding to cart: ${productId} (${qty}x) for user ${jid}`);
+        console.log(`[MessageHandler] Adding to cart: ${productId} (${qty}x) for user ${jid}`);
         const success = await cartService.addToCart(jid, productId, qty);
 
         if (success && PRODUCTS[productId]) {
           added.push(PRODUCTS[productId].name);
         } else {
-          console.log(`Failed to add: ${productId}`);
+          console.log(`[MessageHandler] Failed to add: ${productId}`);
         }
       }
 
       if (added.length === 0) {
+        console.log(`[MessageHandler] No products were added successfully`);
         return reply(sock, jid, 'Não encontrei esse produto. Use /produtos para ver o catálogo.');
       }
 
       // Agora sim busca o carrinho atualizado
+      console.log(`[MessageHandler] Fetching updated cart for user: ${jid}`);
       const cartSummary = await cartText(jid);
 
+      console.log(`[MessageHandler] Sending response: added=${added.join(', ')}, cartSummary length=${cartSummary.length}`);
       return reply(sock, jid,
         `✅ Adicionado ao carrinho: *${added.join(', ')}*\n\n${cartSummary}\n\nPara finalizar, diga "quero pagar" ou use /carrinho.`
       );
@@ -215,10 +260,16 @@ function productsText() {
 }
 
 async function cartText(userId: string) {
+  console.log(`[MessageHandler.cartText] Fetching cart for userId: ${userId}`);
   const cart = await cartService.getCart(userId);
-  if (cart.length === 0) return '🛒 Seu carrinho está vazio.';
+  console.log(`[MessageHandler.cartText] Cart result:`, cart);
+  if (cart.length === 0) {
+    console.log(`[MessageHandler.cartText] Cart is empty for userId: ${userId}`);
+    return '🛒 Seu carrinho está vazio.';
+  }
 
   const total = await cartService.calculateCartTotal(userId);
+  console.log(`[MessageHandler.cartText] Calculated total: ${total}`);
   const lines = cart.map(item => {
     const p = PRODUCTS[item.productId];
     if (!p) return null;
@@ -231,7 +282,9 @@ async function cartText(userId: string) {
     return `• ${p.name} (${item.quantity}x) — ${formatCurrency(price * item.quantity)}`;
   }).filter(Boolean);
 
-  return `🛒 *Seu carrinho:*\n${lines.join('\n')}\n\n💰 *Total: ${formatCurrency(total)}*`;
+  const result = `🛒 *Seu carrinho:*\n${lines.join('\n')}\n\n💰 *Total: ${formatCurrency(total)}*`;
+  console.log(`[MessageHandler.cartText] Returning cart text:`, result);
+  return result;
 }
 
 async function historyText(userId: string) {
