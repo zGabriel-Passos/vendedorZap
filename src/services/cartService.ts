@@ -58,7 +58,7 @@ export class FirebaseCartService {
         }
       } else {
         // Filtrar variações undefined para evitar erro no Firestore
-        const cartItem = { productId, quantity };
+        const cartItem: CartItem = { productId, quantity };
         if (variation !== undefined) {
           cartItem.variation = variation;
         }

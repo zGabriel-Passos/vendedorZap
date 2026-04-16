@@ -5,7 +5,9 @@
       "Bash(tasklist:*)",
       "Bash(taskget b69ravrds:*)",
       "Bash(taskget bhk000qow:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(xargs kill:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

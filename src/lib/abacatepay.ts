@@ -27,7 +27,7 @@ export interface CreateBillingParams {
     name: string;
     email: string;
     cellphone: string;
-    taxId: { number: string; type: 'CPF' | 'CNPJ' };
+    taxId: string;
   };
 }
 
@@ -45,8 +45,21 @@ export interface BillingResponse {
 }
 
 export async function createBilling(params: CreateBillingParams): Promise<BillingResponse> {
-  const response = await axios.post(`${BASE_URL}/billing/create`, params, { headers: headers() });
-  return response.data;
+  try {
+    const response = await axios.post(`${BASE_URL}/billing/create`, params, { headers: headers() });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('[AbacatePay] API Error:', {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers
+      });
+      // Re-throw with enhanced error info
+      throw new Error(`AbacatePay API error ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+    }
+    throw error;
+  }
 }
 
 export async function getBilling(billingId: string): Promise<BillingResponse> {
@@ -76,6 +89,27 @@ export async function createPaymentForCart(
     };
   });
 
+  function formatWhatsAppPhone(value: string) {
+    const digits = value.replace(/[^\d]/g, '');
+    return digits.startsWith('55') ? digits.slice(2) : digits;
+  }
+
+  function generateValidCpf(value: string) {
+    const digits = value.replace(/[^\d]/g, '').slice(-9).padStart(9, '0').split('').map(Number);
+    const firstSum = digits.reduce((sum, digit, index) => sum + digit * (10 - index), 0);
+    const firstCheck = 11 - (firstSum % 11);
+    digits.push(firstCheck >= 10 ? 0 : firstCheck);
+
+    const secondSum = digits.reduce((sum, digit, index) => sum + digit * (11 - index), 0);
+    const secondCheck = 11 - (secondSum % 11);
+    digits.push(secondCheck >= 10 ? 0 : secondCheck);
+
+    return digits.join('');
+  }
+
+  const whatsappPhone = formatWhatsAppPhone(userId);
+  const customerTaxId = generateValidCpf(whatsappPhone);
+
   // Log para debug
   console.log('[AbacatePay] Creating payment with params:', {
     frequency: 'ONE_TIME',
@@ -83,26 +117,26 @@ export async function createPaymentForCart(
     products,
     returnUrl: `${baseUrl}/`,
     completionUrl: `${baseUrl}/api/webhook/abacatepay?userId=${userId}`,
+    customer: {
+      name: `Teste ${whatsappPhone}`,
+      email: `teste${whatsappPhone}@teste.com`,
+      cellphone: whatsappPhone,
+      taxId: customerTaxId,
+    }
   });
-
-  // Tentando com customer mínimo para o modo de teste
-  const cleanUserId = userId.replace(/[^\d]/g, '').slice(-10); // Últimos 10 dígitos
 
   const billing = await createBilling({
     frequency: 'ONE_TIME',
     methods: ['PIX'],
     products,
     returnUrl: `${baseUrl}/`,
-    completionUrl: `${baseUrl}/api/webhook/abacatepay?userId=${userId}`,
+    completionUrl: `${baseUrl}/api/webhook/abacatepay?userId=${encodeURIComponent(userId)}`,
     customer: {
       // Valores mínimos para tentar passar na validação do modo de teste
-      name: `Teste ${cleanUserId}`,
-      email: `teste${cleanUserId}@teste.com`,
-      cellphone: cleanUserId.padStart(11, '0'), // Garantindo 11 dígitos para celular brasileiro
-      taxId: {
-        number: '12345678909', // CPF válido para teste
-        type: 'CPF'
-      }
+      name: `Teste ${whatsappPhone}`,
+      email: `teste${whatsappPhone}@teste.com`,
+      cellphone: whatsappPhone,
+      taxId: customerTaxId,
     }
   });
 
