@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vendedor Zap
 
-## Getting Started
+Agente de IA para vendas no WhatsApp com integração AbacatePay
 
-First, run the development server:
+## 🚀 Funcionalidades
+
+- 📱 Conexão com WhatsApp via QR code
+- 🛍️ Catálogo de produtos (iPhone, MacBook, AirPods...)
+- 🛒 Carrinho via linguagem natural
+- 💳 Pagamento via AbacatePay (PIX)
+- 📦 Confirmação automática de pedido
+- 🤖 IA com Groq (Llama 3) para compreensão de mensagens
+- 📱 Comandos slash disponíveis: `/ajuda`, `/produtos`, `/carrinho`, `/histórico`, `/frete`, `/reset`
+
+## 🖼️ Demo
+
+Acesse `http://localhost:3000` após iniciar o projeto para ver a interface de conexão com WhatsApp.
+
+## 📦 Tecnologias
+
+- **Frontend:** Next.js 16.2.3, React 19.2.4, TypeScript, Tailwind CSS 4
+- **Backend:** Baileys (WhatsApp Web API), Firebase Firestore, Groq SDK (Llama 3)
+- **Integrações:** AbacatePay API (para pagamentos PIX)
+- **Outros:** Axios (HTTP client), @hapi/boom (error handling)
+
+## 🔧 Instalação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone o repositório
+git clone [url-do-repositorio]
+cd vendedorZap/app
+
+# Instale as dependências
+npm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o arquivo .env com suas credenciais (Firebase, Groq, AbacatePay)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 💻 Como Usar
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Inicie o servidor de desenvolvimento
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver a aplicação.
 
-## Learn More
+Para conectar o WhatsApp:
+1. Clique em "Conectar WhatsApp"
+2. Escaneie o QR code com seu WhatsApp (Dispositivos conectados → Conectar dispositivo)
+3. Após a conexão, você pode usar os comandos slash no WhatsApp para interagir com o bot
 
-To learn more about Next.js, take a look at the following resources:
+## ⚙️ Configuração
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Copie o arquivo `.env.example` para `.env` e preencha as seguintes variáveis:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+# Firebase Client SDK
+NEXT_PUBLIC_FIREBASE_API_KEY=sua_chave_aqui
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=seu_dominio_aqui
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=seu_projeto_aqui
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=seu_bucket_aqui
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=seu_remetente_aqui
+NEXT_PUBLIC_FIREBASE_APP_ID=seu_app_id_aqui
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=seu_measurement_id_aqui
 
-## Deploy on Vercel
+# Groq API
+GROQ_API_KEY=sua_chave_groq_aqui
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# AbacatePay
+ABACATEPAY_API_KEY=sua_chave_abacatepay_aqui
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# URL da aplicação
+NEXTAUTH_URL=http://localhost:3000
+
+# WhatsApp (opcional)
+WHATSAPP_VERIFY_TOKEN=seu_token_aqui
+MY_WHATSAPP_ID=seu_whatsapp_id_aqui
+```
+
+## 🧪 Testes
+
+Este projeto atualmente não inclui testes automatizados. Para verificar o funcionamento:
+
+1. Inicie o servidor de desenvolvimento (`npm run dev`)
+2. Acesse http://localhost:3000
+3. Conecte seu WhatsApp via QR code
+4. Teste os comandos slash no WhatsApp
+
+## 🚀 Deploy
+
+O projeto pode ser facilmente deployado na Vercel:
+
+```bash
+# Instale a CLI da Vercel (se não tiver)
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+Ou faça o deploy diretamente pelo [painel da Vercel](https://vercel.com/new).
+
+## 🤝 Como Contribuir
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Faça commit das suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Faça push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+
+## ✨ Autor
+
+Desenvolvido por Gabriel Passos
+
+---
+
+*Projeto construído com Next.js e Baileys para automatização de vendas no WhatsApp.*
