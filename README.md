@@ -1,7 +1,7 @@
 # Vendedor Zap
+> **Em construção**
 > **Stack resumida:** `Next.js` · `React` · `TypeScript` · `Tailwind CSS` · `Baileys` · `Firebase Firestore` · `Groq (Llama 3)` · `AbacatePay` · `Axios`
 ![Instrução](assets/print.jpg)
-> **Em construção**
 
 Agente de IA para vendas no WhatsApp com integração AbacatePay
 
