@@ -29,7 +29,7 @@ Acesse `http://localhost:3000` após iniciar o projeto para ver a interface de c
 
 ```bash
 # Clone o repositório
-git clone [url-do-repositorio]
+git clone https://github.com/zGabriel-Passos/vendedorZap.git
 cd vendedorZap/app
 
 # Instale as dependências
@@ -85,7 +85,7 @@ MY_WHATSAPP_ID=seu_whatsapp_id_aqui
 ### Como obter a chave da AbacatePay
 
 Para obter sua chave de API da AbacatePay:
-1. Acesse o site [AbacatePay](https://abacatepay.com)
+1. Acesse o site [AbacatePay](https://abacatepay.com) ou a doc [Doc AbacatePay](https://docs.abacatepay.com/pages/start/welcome)
 2. Crie uma conta gratuita ou faça login
 3. No painel do usuário, navegue até a seção de "API" ou "Integrações"
 4. Gere uma nova chave de API ou use uma existente
@@ -100,22 +100,13 @@ Este projeto atualmente não inclui testes automatizados. Para verificar o funci
 3. Conecte seu WhatsApp via QR code
 4. Teste os comandos slash no WhatsApp
 
-
-## 🤝 Como Contribuir
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Faça commit das suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Faça push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
 ## 📄 Licença
 
 Este projeto está sob a licença MIT.
 
 ## ✨ Autor
 
-Desenvolvido por Gabriel Passos
+Gabriel Passos
 
 ---
 
