@@ -56,7 +56,7 @@ Para conectar o WhatsApp:
 
 ## ⚙️ Configuração
 
-Copie o arquivo `.env.example` para `.env` e preencha as seguintes variáveis:
+Copie/Renomeie o arquivo `.env.example` para `.env` e preencha as seguintes variáveis:
 
 ```env
 # Firebase Client SDK
