@@ -1,6 +1,7 @@
 # Vendedor Zap
 > **Stack resumida:** `Next.js` · `React` · `TypeScript` · `Tailwind CSS` · `Baileys` · `Firebase Firestore` · `Groq (Llama 3)` · `AbacatePay` · `Axios`
-![Instrução](assets/print.jpg)
+
+![Interface atual do Vendedor Zap](assets/readme-home.png)
 
 Agente de IA para vendas no WhatsApp com integração AbacatePay
 
@@ -99,7 +100,6 @@ Este projeto atualmente não inclui testes automatizados. Para verificar o funci
 2. Acesse http://localhost:3000
 3. Conecte seu WhatsApp via QR code
 4. Teste os comandos slash no WhatsApp
-
 
 ## 🤝 Como Contribuir
 
