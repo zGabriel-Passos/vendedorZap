@@ -1,7 +1,13 @@
 # Vendedor Zap
+#### **- Em construção**
 > **Stack resumida:** `Next.js` · `React` · `TypeScript` · `Tailwind CSS` · `Baileys` · `Firebase Firestore` · `Groq (Llama 3)` · `AbacatePay` · `Axios`
+<<<<<<< HEAD
 
 ![Interface atual do Vendedor Zap](assets/readme-home.png)
+=======
+> 
+![Instrução](assets/print.jpg)
+>>>>>>> ea4d938e10db9cb8f4b180bce62db7969dba5476
 
 Agente de IA para vendas no WhatsApp com integração AbacatePay
 
@@ -30,7 +36,7 @@ Acesse `http://localhost:3000` após iniciar o projeto para ver a interface de c
 
 ```bash
 # Clone o repositório
-git clone [url-do-repositorio]
+git clone https://github.com/zGabriel-Passos/vendedorZap.git
 cd vendedorZap/app
 
 # Instale as dependências
@@ -86,7 +92,7 @@ MY_WHATSAPP_ID=seu_whatsapp_id_aqui
 ### Como obter a chave da AbacatePay
 
 Para obter sua chave de API da AbacatePay:
-1. Acesse o site [AbacatePay](https://abacatepay.com)
+1. Acesse o site [AbacatePay](https://abacatepay.com) ou a doc [Doc AbacatePay](https://docs.abacatepay.com/pages/start/welcome)
 2. Crie uma conta gratuita ou faça login
 3. No painel do usuário, navegue até a seção de "API" ou "Integrações"
 4. Gere uma nova chave de API ou use uma existente
@@ -101,6 +107,7 @@ Este projeto atualmente não inclui testes automatizados. Para verificar o funci
 3. Conecte seu WhatsApp via QR code
 4. Teste os comandos slash no WhatsApp
 
+<<<<<<< HEAD
 ## 🤝 Como Contribuir
 
 1. Faça um fork do projeto
@@ -109,13 +116,15 @@ Este projeto atualmente não inclui testes automatizados. Para verificar o funci
 4. Faça push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
+=======
+>>>>>>> ea4d938e10db9cb8f4b180bce62db7969dba5476
 ## 📄 Licença
 
 Este projeto está sob a licença MIT.
 
 ## ✨ Autor
 
-Desenvolvido por Gabriel Passos
+Gabriel Passos
 
 ---
 
