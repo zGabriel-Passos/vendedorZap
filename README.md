@@ -1,123 +1,128 @@
 # Vendedor Zap
-#### **- Em construção**
 
-> **Stack resumida:** `Next.js` · `React` · `TypeScript` · `Tailwind CSS` · `Baileys` · `Firebase Firestore` · `Groq (Llama 3)` · `AbacatePay` · `Axios`
+Agente de IA para vendas no WhatsApp com integracao com Groq, Firebase e AbacatePay.
+
+> Stack: `Next.js` · `React` · `TypeScript` · `Tailwind CSS` · `Baileys` · `Firebase Firestore` · `Groq` · `AbacatePay`
 
 ![Interface atual do Vendedor Zap](assets/readme-home.png)
 
-Agente de IA para vendas no WhatsApp com integração AbacatePay.
+## Funcionalidades
 
-## 🚀 Funcionalidades
+- Conexao com WhatsApp via QR code
+- Catalogo de produtos com carrinho
+- Atendimento por linguagem natural com Groq
+- Geracao de link de pagamento PIX via AbacatePay
+- Registro de pedidos no Firebase
+- Comandos disponiveis: `/ajuda`, `/produtos`, `/carrinho`, `/historico`, `/frete`, `/reset`
 
-- 📱 Conexão com WhatsApp via QR code
-- 🛍️ Catálogo de produtos (iPhone, MacBook, AirPods...)
-- 🛒 Carrinho via linguagem natural
-- 💳 Pagamento via AbacatePay (PIX)
-- 📦 Confirmação automática de pedido
-- 🤖 IA com Groq (Llama 3) para compreensão de mensagens
-- 📱 Comandos slash disponíveis: `/ajuda`, `/produtos`, `/carrinho`, `/histórico`, `/frete`, `/reset`
+## Tecnologias
 
-## 🖼️ Demo
+- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS 4
+- Backend: API Routes do Next.js, Baileys, Firebase Firestore
+- Integracoes: Groq API e AbacatePay
 
-Acesse `http://localhost:3000` após iniciar o projeto para ver a interface de conexão com WhatsApp.
-
-## 📦 Tecnologias
-
-- **Frontend:** Next.js 16.2.3, React 19.2.4, TypeScript, Tailwind CSS 4
-- **Backend:** Baileys (WhatsApp Web API), Firebase Firestore, Groq SDK (Llama 3)
-- **Integrações:** AbacatePay API (para pagamentos PIX)
-- **Outros:** Axios (HTTP client), @hapi/boom (error handling)
-
-## 🔧 Instalação
+## Como rodar localmente
 
 ```bash
-# Clone o repositório
-git clone https://github.com/zGabriel-Passos/vendedorZap.git
+git clone https://github.com/SEU_USUARIO/vendedorZap.git
 cd vendedorZap/app
-
-# Instale as dependências
 npm install
-
-# Configure as variáveis de ambiente
-cp .env.example .env
-# Edite o arquivo .env com suas credenciais (Firebase, Groq, AbacatePay)
 ```
 
-## 💻 Como Usar
+### Configuracao do `.env`
+
+1. Renomeie o arquivo `.env.example` para `.env`.
+2. Preencha as chaves obrigatorias do Firebase, Groq e AbacatePay.
+3. Ajuste `MY_WHATSAPP_ID` com o numero que podera falar com o bot.
+4. Em desenvolvimento, mantenha `NEXTAUTH_URL=http://localhost:3000`.
+5. Se publicar em producao, troque `NEXTAUTH_URL` pela URL publica da aplicacao.
+
+Exemplo no Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Exemplo no macOS/Linux:
 
 ```bash
-# Inicie o servidor de desenvolvimento
+cp .env.example .env
+```
+
+O proprio arquivo `.env.example` ja traz um passo a passo curto de onde obter cada chave.
+
+## Variaveis de ambiente usadas no projeto
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+GROQ_API_KEY=
+ABACATEPAY_API_KEY=
+NEXTAUTH_URL=http://localhost:3000
+WHATSAPP_VERIFY_TOKEN=
+MY_WHATSAPP_ID=
+```
+
+### Observacoes importantes
+
+- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` esta no exemplo por completude, mas o codigo atual nao depende dela.
+- `WHATSAPP_VERIFY_TOKEN` e opcional neste projeto. Ele so e usado na rota `app/api/webhook/whatsapp/route.ts`.
+- `MY_WHATSAPP_ID` restringe quem pode conversar com o bot. Use o numero em formato `5511999999999`.
+
+## Executando
+
+```bash
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver a aplicação.
+Abra `http://localhost:3000` e clique em `Conectar WhatsApp`.
 
-Para conectar o WhatsApp:
-1. Clique em "Conectar WhatsApp"
-2. Escaneie o QR code com seu WhatsApp (`Dispositivos conectados` → `Conectar dispositivo`)
-3. Após a conexão, você pode usar os comandos slash no WhatsApp para interagir com o bot
+Depois:
 
-## ⚙️ Configuração
+1. Escaneie o QR code com o WhatsApp.
+2. Use o numero configurado em `MY_WHATSAPP_ID` para mandar mensagens ao bot.
+3. Teste comandos como `/produtos` e `/carrinho`.
 
-Copie/renomeie o arquivo `.env.example` para `.env` e preencha as seguintes variáveis:
+## Fluxo principal do projeto
 
-```env
-# Firebase Client SDK
-NEXT_PUBLIC_FIREBASE_API_KEY=sua_chave_aqui
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=seu_dominio_aqui
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=seu_projeto_aqui
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=seu_bucket_aqui
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=seu_remetente_aqui
-NEXT_PUBLIC_FIREBASE_APP_ID=seu_app_id_aqui
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=seu_measurement_id_aqui
+1. A interface web inicia a conexao com o WhatsApp.
+2. O Baileys recebe as mensagens.
+3. O Groq interpreta a intencao do usuario.
+4. O carrinho e os pedidos ficam registrados no Firebase.
+5. O checkout gera um link PIX pela AbacatePay.
 
-# Groq API
-GROQ_API_KEY=sua_chave_groq_aqui
+## Estrutura relevante
 
-# AbacatePay
-ABACATEPAY_API_KEY=sua_chave_abacatepay_aqui
-
-# URL da aplicação
-NEXTAUTH_URL=http://localhost:3000
-
-# WhatsApp (opcional)
-WHATSAPP_VERIFY_TOKEN=seu_token_aqui
-MY_WHATSAPP_ID=seu_whatsapp_id_aqui
+```text
+app/
+├─ app/                         # rotas e UI do Next.js
+├─ src/lib/firebase.ts          # configuracao do Firebase
+├─ src/lib/whatsapp.ts          # conexao com WhatsApp via Baileys
+├─ src/lib/abacatepay.ts        # integracao de pagamentos
+├─ src/services/groqService.ts  # interpretacao com IA
+└─ src/services/messageHandler.ts
 ```
 
-### Como obter a chave da AbacatePay
+## GitHub e seguranca
 
-1. Acesse [AbacatePay](https://abacatepay.com) ou a [documentação](https://docs.abacatepay.com/pages/start/welcome)
-2. Crie uma conta gratuita ou faça login
-3. No painel do usuário, navegue até a seção de API ou Integrações
-4. Gere uma nova chave de API ou use uma existente
-5. Copie a chave e cole no campo `ABACATEPAY_API_KEY` do seu arquivo `.env`
+- O arquivo `.env` nao deve ser versionado.
+- O `.env.example` pode ser commitado e usado como modelo.
+- A pasta `whatsapp_auth/` tambem deve permanecer fora do Git, pois guarda a sessao local do WhatsApp.
 
-## 🧪 Testes
+## Testes e validacao
 
-Este projeto atualmente não inclui testes automatizados. Para verificar o funcionamento:
+O projeto nao possui testes automatizados no momento. Para validar:
 
-1. Inicie o servidor de desenvolvimento com `npm run dev`
-2. Acesse `http://localhost:3000`
-3. Conecte seu WhatsApp via QR code
-4. Teste os comandos slash no WhatsApp
+1. Rode `npm run lint`.
+2. Rode `npm run dev`.
+3. Conecte o WhatsApp e envie mensagens usando o numero permitido.
+4. Gere um link de pagamento e confira o retorno da AbacatePay.
 
-## 🤝 Como Contribuir
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature com `git checkout -b feature/AmazingFeature`
-3. Faça commit das suas mudanças com `git commit -m 'Add some AmazingFeature'`
-4. Faça push para a branch com `git push origin feature/AmazingFeature`
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
-
-## ✨ Autor
+## Autor
 
 Gabriel Passos
-
----
-
-*Projeto construído com Next.js e Baileys para automatização de vendas no WhatsApp.*
