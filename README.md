@@ -109,12 +109,6 @@ app/
 └─ src/services/messageHandler.ts
 ```
 
-## GitHub e seguranca
-
-- O arquivo `.env` nao deve ser versionado.
-- O `.env.example` pode ser commitado e usado como modelo.
-- A pasta `whatsapp_auth/` tambem deve permanecer fora do Git, pois guarda a sessao local do WhatsApp.
-
 ## Testes e validacao
 
 O projeto nao possui testes automatizados no momento. Para validar:
