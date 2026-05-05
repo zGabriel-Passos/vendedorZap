@@ -50,6 +50,7 @@ cp .env.example .env
 ```
 
 O proprio arquivo `.env.example` ja traz um passo a passo curto de onde obter cada chave.
+Se quiser um passo a passo mais detalhado para Firebase, Groq e AbacatePay, consulte `GUIA.md`.
 
 ## Variaveis de ambiente usadas no projeto
 
