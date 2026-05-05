@@ -25,7 +25,7 @@ Agente de IA para vendas no WhatsApp com integracao com Groq, Firebase e Abacate
 
 ```bash
 git clone https://github.com/SEU_USUARIO/vendedorZap.git
-cd vendedorZap/app
+cd vendedorZap
 npm install
 ```
 
